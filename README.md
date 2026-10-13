@@ -14,7 +14,6 @@ No password, ever. Sleeper's API is public and read-only, so Night Owl only need
 
 ```
 packages/core     Pure TypeScript: types, API clients, scoring, play parsing, index, audit, Vegas, draft math (Vitest)
-apps/bff-proxy    Cloudflare Worker: slim player directory (ETag) and the weekly Vegas slate (KV cache)
 apps/mobile       Expo SDK 57 app: expo-router tabs, NativeWind, SQLite, MMKV, Zustand, TanStack Query
 apps/mobile/modules/nightowl-live-activity   Local Expo module bridging ActivityKit
 apps/mobile/targets/widgets                  Widget extension with the Live Activity UI (SwiftUI)
@@ -34,28 +33,16 @@ npx expo run:ios                            # build and run on a simulator or de
 
 Set `ios.appleTeamId` in `apps/mobile/app.json` before building for a device; the widget extension and the App Group (`group.com.nightowl.ios`) need it for signing. Live Activities need iOS 16.2+ and a development build (Expo Go has no ActivityKit module; the app runs there without it).
 
-### Odds and the BFF
+### No server
 
-The app works with no server: odds come from DraftKings lines on ESPN, priced with Sleeper Picks payouts, and the player directory comes straight from Sleeper and is trimmed on the device.
-
-To use the Worker instead (smaller player download, The Odds API prices):
-
-```bash
-cd apps/bff-proxy
-npx wrangler kv namespace create NIGHTOWL_KV   # paste the id into wrangler.toml
-npx wrangler secret put ODDS_API_KEY           # optional
-npx wrangler deploy
-```
-
-Then set `EXPO_PUBLIC_BFF_URL=https://<your-worker>.workers.dev` for the app. Without `ODDS_API_KEY` the Worker serves the same keyless slate the app builds itself. With it, the 15-minute prewarm cron spends Odds API credits on every game that kicks off within 36 hours; check your plan's quota.
+Everything comes from public feeds, straight from the phone: Sleeper for leagues, rosters, matchups, players and Picks lines; ESPN for the scoreboard, play-by-play and DraftKings lines. The player directory (~5 MB) is fetched at most once a day, trimmed to active fantasy players and kept in SQLite. There are no API keys and nothing to deploy.
 
 ## Verification
 
 | Gate | Command | Status |
 | --- | --- | --- |
 | 0 | `npm install && npm run typecheck --workspaces` | passes |
-| 1 | `npm test --workspace=@nightowl/core && npm run typecheck --workspace=@nightowl/core` | 101 tests |
-| 2 | `npm run typecheck --workspace=@nightowl/bff-proxy` | passes; 5 Worker tests; bundles with `wrangler deploy --dry-run` |
+| 1 | `npm test --workspace=@nightowl/core && npm run typecheck --workspace=@nightowl/core` | 100 tests |
 | 3–5 | `npm run typecheck --workspace=@nightowl/mobile` | passes; iOS JS bundle builds with `expo export` |
 | 6 | `npm test --workspaces && npm run typecheck --workspaces && npx expo prebuild --platform ios` | passes; pods install, widget target and App Group generated |
 

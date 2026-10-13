@@ -10,13 +10,13 @@ npm test --workspace=@nightowl/core              # Vitest, packages/core/src/__t
 npm run typecheck --workspace=@nightowl/mobile   # strict tsc for the app
 cd apps/mobile && npx expo export --platform ios # Metro bundle check, no Xcode needed
 cd apps/mobile && npx expo prebuild -p ios       # regenerate ios/ (gitignored)
-cd apps/bff-proxy && npx wrangler dev            # Worker locally
 ```
 
 ## Rules
 
 - Every package compiles under `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`. No `any`.
-- Pure logic goes in `packages/core` with tests; the app and Worker import it as `@nightowl/core` (TypeScript source, no build step).
+- Pure logic goes in `packages/core` with tests; the app imports it as `@nightowl/core` (TypeScript source, no build step).
+- No server and no API keys: every feed (Sleeper, ESPN) is public and called from the device. Odds are ESPN/DraftKings lines priced with Sleeper Picks payouts.
 - Sleeper is read-only and keyed by username; never ask for a password. Lineup edits deep-link to `sleeper://league/{id}` (web fallback `https://sleeper.com/leagues/{id}/team`).
 - Sleeper `settings.type`: 0 redraft, 1 keeper, 2 dynasty. Third-round reversal is `type: 'snake'` with `settings.reversal_round = 3`.
 - Sleeper stat rows already carry bonus keys, so `statLinePoints` (Σ stat × weight) matches Sleeper exactly; prefer it over re-deriving bonuses.

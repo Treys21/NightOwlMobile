@@ -10,7 +10,6 @@ export const StorageKeys = {
   ACTIVE_SEASON: 'nightowl.active_season',
   INCLUDED_LEAGUE_IDS: 'nightowl.included_league_ids',
   LEAGUE_WEIGHTS: 'nightowl.league_weights',
-  PLAYERS_ETAG: 'nightowl.players_etag',
   PLAYERS_LAST_SYNC_MS: 'nightowl.players_last_sync',
   HAPTICS_ENABLED: 'nightowl.haptics_enabled'
 } as const;
@@ -46,9 +45,6 @@ export const settings = {
   getLeagueWeights: (): Record<string, number> => readJson(StorageKeys.LEAGUE_WEIGHTS, isWeights) ?? {},
   setLeagueWeights: (weights: Record<string, number>): void =>
     storage.set(StorageKeys.LEAGUE_WEIGHTS, JSON.stringify(weights)),
-
-  getPlayersEtag: (): string | null => storage.getString(StorageKeys.PLAYERS_ETAG) ?? null,
-  setPlayersEtag: (etag: string): void => storage.set(StorageKeys.PLAYERS_ETAG, etag),
 
   getPlayersLastSyncMs: (): number => storage.getNumber(StorageKeys.PLAYERS_LAST_SYNC_MS) ?? 0,
   setPlayersLastSyncMs: (ms: number): void => storage.set(StorageKeys.PLAYERS_LAST_SYNC_MS, ms),

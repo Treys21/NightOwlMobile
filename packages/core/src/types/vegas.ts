@@ -50,12 +50,10 @@ export interface PlayerVegasProjection {
   gameEnvironment: GameEnvironmentOdds | null;
 }
 
-/** What the BFF (or the direct fallback) returns for one NFL week. */
+/** One NFL week's lines: ESPN/DraftKings, priced with Sleeper Picks payouts. */
 export interface VegasSlate {
   games: GameEnvironmentOdds[];
   props: NormalizedPlayerProp[];
-  /** 'odds-api' via the BFF, 'espn' from the keyless fallback. */
-  source: 'odds-api' | 'espn';
   fetchedAtMs: number;
 }
 

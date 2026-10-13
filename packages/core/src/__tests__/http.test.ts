@@ -51,17 +51,4 @@ describe('HttpClient', () => {
     await expect(client.getJson('https://api.sleeper.app/x')).rejects.toMatchObject({ status: 404 });
     expect(calls).toBe(1);
   });
-
-  it('sends If-None-Match and reports 304', async () => {
-    let sent: string | null = null;
-    const client = new HttpClient({
-      fetchImpl: async (_url, init) => {
-        sent = new Headers(init?.headers).get('If-None-Match');
-        return sent === '"abc"' ? json(304, null) : json(200, [1], { ETag: '"abc"' });
-      }
-    });
-    expect(await client.getConditional('https://bff.example/players', null)).toEqual({ status: 200, data: [1], etag: '"abc"' });
-    expect(await client.getConditional('https://bff.example/players', '"abc"')).toEqual({ status: 304, data: null, etag: '"abc"' });
-    expect(sent).toBe('"abc"');
-  });
 });

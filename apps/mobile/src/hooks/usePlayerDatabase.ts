@@ -1,11 +1,11 @@
 // Keeps the slim player directory on device: load SQLite into the hot map at
-// launch, then refresh at most once a day (ETag-aware through the BFF, so an
-// unchanged directory costs a 304).
+// launch, then refresh from Sleeper at most once a day (Sleeper's request for
+// the ~5 MB /players/nfl dump), trimmed to active fantasy players.
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { settings } from '../db/mmkvStorage';
 import { countPlayers, loadAllPlayers, replaceAllPlayers } from '../db/sqliteClient';
-import { odds } from '../lib/clients';
+import { sleeper } from '../lib/clients';
 import { useNightOwlStore } from '../store/useNightOwlStore';
 
 const DAY_MS = 24 * 3600000;
@@ -27,12 +27,9 @@ async function syncPlayers(force: boolean): Promise<number> {
   const empty = (await countPlayers()) === 0;
   if (!force && !stale && !empty) return Object.keys(useNightOwlStore.getState().players).length;
 
-  const result = await odds.getSlimPlayers(empty ? null : settings.getPlayersEtag());
-  if (result.status === 200 && result.players) {
-    await replaceAllPlayers(result.players);
-    useNightOwlStore.getState().setPlayers(Object.fromEntries(result.players.map((p) => [p.player_id, p])));
-    if (result.etag) settings.setPlayersEtag(result.etag);
-  }
+  const players = await sleeper.getSlimPlayers();
+  await replaceAllPlayers(players);
+  useNightOwlStore.getState().setPlayers(Object.fromEntries(players.map((p) => [p.player_id, p])));
   settings.setPlayersLastSyncMs(Date.now());
   return Object.keys(useNightOwlStore.getState().players).length;
 }

@@ -105,7 +105,7 @@ export class SleeperClient {
     return this.http.getJson(`${SLEEPER_V1}/players/nfl`);
   }
 
-  /** On-device fallback for the BFF's slim directory. */
+  /** The directory trimmed to active fantasy players, for on-device storage. */
   async getSlimPlayers(): Promise<SlimNflPlayer[]> {
     return slimPlayerDirectory(await this.getAllPlayers());
   }

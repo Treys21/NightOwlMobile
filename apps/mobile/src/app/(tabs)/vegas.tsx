@@ -51,7 +51,7 @@ export default function Vegas() {
   const lowestStarter = [...flex].reverse().find((c) => c.role !== 'Bench') ?? null;
   const bestBench = flex.find((c) => c.role === 'Bench') ?? flex.find((c) => c.player.player_id !== lowestStarter?.player.player_id) ?? null;
   const games = [...(vegas.slate?.games ?? [])].sort((a, b) => Date.parse(a.commenceTimeIso) - Date.parse(b.commenceTimeIso));
-  const source = vegas.slate ? `${vegas.slate.source === 'odds-api' ? 'DraftKings via The Odds API' : 'DraftKings lines · Sleeper Picks prices'} · ${ago(vegas.slate.fetchedAtMs)}` : null;
+  const source = vegas.slate ? `DraftKings lines · Sleeper Picks prices · ${ago(vegas.slate.fetchedAtMs)}` : null;
 
   return (
     <SafeAreaView className="flex-1 bg-night-950" edges={['top']}>

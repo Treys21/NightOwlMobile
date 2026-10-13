@@ -86,12 +86,6 @@ export interface RequestOptions {
   signal?: AbortSignal;
 }
 
-export interface ConditionalResult<T> {
-  status: 200 | 304;
-  data: T | null;
-  etag: string | null;
-}
-
 export class HttpClient {
   private readonly fetchImpl: typeof fetch;
   private readonly buckets = new Map<string, TokenBucket>();
@@ -151,15 +145,6 @@ export class HttpClient {
     return (await res.json()) as T;
   }
 
-  /** GET with If-None-Match; a 304 comes back as { status: 304, data: null }. */
-  async getConditional<T>(url: string, etag: string | null, options: RequestOptions = {}): Promise<ConditionalResult<T>> {
-    const headers: Record<string, string> = { ...(options.headers ?? {}) };
-    if (etag) headers['If-None-Match'] = etag;
-    const res = await this.raw(url, { ...options, headers });
-    if (res.status === 304) return { status: 304, data: null, etag };
-    if (!res.ok) throw new HttpError(res.status, url);
-    return { status: 200, data: (await res.json()) as T, etag: res.headers.get('ETag') };
-  }
 }
 
 /** One shared client for the app. */

@@ -1,12 +1,9 @@
-// Vegas lines for a week. With EXPO_PUBLIC_BFF_URL set, the Cloudflare
-// Worker serves a normalized slate (The Odds API behind a secret key, cached
-// in KV). Without it — local development, or the Worker down — the app
-// builds the same slate itself from keyless feeds: ESPN's DraftKings lines
+// Vegas lines for a week, from keyless feeds: ESPN's DraftKings player lines
 // and spreads, priced with Sleeper Picks payouts.
 import type { EspnPropBet, EspnPropBetsPage, NflGame } from '../types/espn';
-import type { SeasonType, SlimNflPlayer } from '../types/sleeper';
-import type { PlayerLookup } from '../engine/playerNormalizer';
+import type { SeasonType } from '../types/sleeper';
 import type { NormalizedPlayerProp, PicksMarket, VegasSlate } from '../types/vegas';
+import type { PlayerLookup } from '../engine/playerNormalizer';
 import { HttpClient, defaultHttp } from './http';
 import { LiveFeedClient, liveFeedClient } from './liveFeedClient';
 import { SleeperClient, sleeperClient } from './sleeperClient';
@@ -18,55 +15,24 @@ export const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/football/le
 const MAX_PROP_PAGES = 4;
 
 export interface OddsClientOptions {
-  bffUrl?: string | null;
   http?: HttpClient;
   sleeper?: SleeperClient;
   espn?: LiveFeedClient;
 }
 
-export interface SlimPlayersResult {
-  status: 200 | 304;
-  players: SlimNflPlayer[] | null;
-  etag: string | null;
-  source: 'bff' | 'sleeper';
-}
-
 export class OddsClient {
-  private readonly bffUrl: string | null;
   private readonly http: HttpClient;
   private readonly sleeper: SleeperClient;
   private readonly espn: LiveFeedClient;
 
   constructor(options: OddsClientOptions = {}) {
-    this.bffUrl = options.bffUrl ? options.bffUrl.replace(/\/+$/, '') : null;
     this.http = options.http ?? defaultHttp;
     this.sleeper = options.sleeper ?? sleeperClient;
     this.espn = options.espn ?? liveFeedClient;
   }
 
-  get usesBff(): boolean {
-    return this.bffUrl !== null;
-  }
-
-  /** The week's games and player props, from the BFF or the keyless fallback. */
+  /** The week's games and player props. */
   async getSlate(
-    season: string,
-    week: number,
-    seasonType: SeasonType,
-    players: Pick<PlayerLookup, 'byId' | 'byEspnId'>
-  ): Promise<VegasSlate> {
-    if (this.bffUrl) {
-      try {
-        return await this.http.getJson<VegasSlate>(`${this.bffUrl}/api/v1/odds?season=${season}&week=${week}&seasonType=${seasonType}`);
-      } catch {
-        // Fall through to the direct path: stale-but-present beats nothing.
-      }
-    }
-    return this.directSlate(season, week, seasonType, players);
-  }
-
-  /** Keyless slate: ESPN game lines + DraftKings player lines, priced by Sleeper Picks. */
-  async directSlate(
     season: string,
     week: number,
     seasonType: SeasonType,
@@ -87,11 +53,9 @@ export class OddsClient {
         });
       })
     );
-    const props = mergeSleeperPicks(perGame.flat(), picks, upcoming, (id) => players.byId(id)?.team ?? null);
     return {
       games: games.map(gameEnvironmentFromGame).filter((g): g is NonNullable<typeof g> => g !== null),
-      props,
-      source: 'espn',
+      props: mergeSleeperPicks(perGame.flat(), picks, upcoming, (id) => players.byId(id)?.team ?? null),
       fetchedAtMs: Date.now()
     };
   }
@@ -106,19 +70,6 @@ export class OddsClient {
       items.push(...(next.items ?? []));
     }
     return items;
-  }
-
-  /** The slim player directory: the BFF's ETag-cached copy, else trimmed on device. */
-  async getSlimPlayers(etag: string | null): Promise<SlimPlayersResult> {
-    if (this.bffUrl) {
-      try {
-        const res = await this.http.getConditional<SlimNflPlayer[]>(`${this.bffUrl}/api/v1/players/slim`, etag);
-        return { status: res.status, players: res.data, etag: res.etag, source: 'bff' };
-      } catch {
-        // Fall back to Sleeper directly.
-      }
-    }
-    return { status: 200, players: await this.sleeper.getSlimPlayers(), etag: null, source: 'sleeper' };
   }
 }
 

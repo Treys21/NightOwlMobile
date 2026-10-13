@@ -16,7 +16,7 @@ port keeps them, and records where the extension differs from the port spec.
 | `GET /v1/league/{id}/matchups/{week}` | starters, live totals | `sleeperClient.getMatchups` |
 | `GET /v1/league/{id}/traded_picks` | next year's pick owners | `sleeperClient.getTradedPicks` |
 | `GET /v1/league/{id}/drafts`, `/v1/draft/{id}`, `/v1/draft/{id}/picks` | draft board, on-the-clock | `sleeperClient.getLeagueDrafts/getDraft/getDraftPicks` |
-| `GET /v1/players/nfl` (~5 MB, once a day) | player directory | BFF `slimPlayers` + `sleeperClient.getAllPlayers` fallback |
+| `GET /v1/players/nfl` (~5 MB, once a day) | player directory | `sleeperClient.getSlimPlayers`, trimmed on device and stored in SQLite |
 | `GET api.sleeper.com/stats/nfl/{season}/{week}` | live stat lines; scoring = Σ stat × weight | `sleeperClient.getWeekStats` + `statTracker` |
 | `GET api.sleeper.com/projections/nfl/{season}/{week}` | start/sit projections | `sleeperClient.getWeekProjections` |
 | `GET api.sleeper.com/stats/nfl/{season}?position[]=DEF` | defense-vs-position ranks | `sleeperClient.getDefenseSeason` |
@@ -81,8 +81,9 @@ native app sends no Origin, so iOS calls ESPN directly.
    kept as `statTracker` because it is exact for every league's custom
    scoring (including bonuses the play parser can't see).
 2. **Odds source.** The extension uses ESPN/DraftKings props and Sleeper Picks
-   lines, both keyless. The spec's Odds API path lives in the BFF (key held as
-   a Worker secret); the client falls back to the keyless ESPN feed.
+   lines, both keyless, and so does the app. The spec's Odds API and
+   Cloudflare Worker were built, then removed: they added a paid key, quota
+   and a deploy for slightly sharper prices.
 3. **`settings.type`.** Sleeper uses `0` redraft, `1` keeper, `2` dynasty (the
    spec is right; the crawler's CLAUDE.md is not).
 4. **3RR.** Sleeper encodes third-round reversal as a snake draft with
