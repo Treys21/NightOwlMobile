@@ -61,6 +61,8 @@ export interface NightOwlState {
   feedMode: FeedFilterMode;
   feedLeagueId: string | null;
   lastPollAt: number | null;
+  /** Bumped to ask the live poller for an immediate poll (pull to refresh). */
+  pollRequest: number;
 
   setUser: (user: SleeperUser, season: string) => void;
   signOut: () => void;
@@ -79,6 +81,7 @@ export interface NightOwlState {
   setFeedMode: (mode: FeedFilterMode) => void;
   setFeedLeague: (leagueId: string | null) => void;
   markPolled: (at: number) => void;
+  requestPoll: () => void;
 }
 
 const emptyLookup = buildPlayerLookup([]);
@@ -137,6 +140,7 @@ export const useNightOwlStore = create<NightOwlState>()((set, get) => {
     feedMode: 'ALL_ACTION',
     feedLeagueId: null,
     lastPollAt: null,
+    pollRequest: 0,
 
     setUser: (user, season) => {
       settings.setActiveUser(user);
@@ -199,6 +203,7 @@ export const useNightOwlStore = create<NightOwlState>()((set, get) => {
     replaceFeed: (events) => set({ feed: events.slice(0, MAX_FEED) }),
     setFeedMode: (feedMode) => set({ feedMode }),
     setFeedLeague: (feedLeagueId) => set({ feedLeagueId }),
-    markPolled: (lastPollAt) => set({ lastPollAt })
+    markPolled: (lastPollAt) => set({ lastPollAt }),
+    requestPoll: () => set({ pollRequest: get().pollRequest + 1 })
   };
 });

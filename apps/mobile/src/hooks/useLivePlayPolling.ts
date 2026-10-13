@@ -164,8 +164,13 @@ export function useLivePlayPolling(): void {
       }
     });
 
+    const unsubscribe = useNightOwlStore.subscribe((next, prev) => {
+      if (next.pollRequest !== prev.pollRequest) void poll().finally(schedule);
+    });
+
     return () => {
       cancelled = true;
+      unsubscribe();
       sub.remove();
       if (timer.current) clearTimeout(timer.current);
     };
