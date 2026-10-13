@@ -1,13 +1,27 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Night Owl",
+    "slug": "nightowl",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nightowl.ios",
+      "infoPlist": {
+        "NSSupportsLiveActivities": true,
+        "NSSupportsLiveActivitiesFrequentUpdates": true,
+        "LSApplicationQueriesSchemes": [
+          "sleeper"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.com.nightowl.ios"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -28,6 +42,11 @@
       "expo-status-bar",
       "expo-font",
       "@bacons/apple-targets"
-    ]
+    ],
+    "scheme": "nightowl",
+    "backgroundColor": "#070A10",
+    "experiments": {
+      "typedRoutes": false
+    }
   }
 }

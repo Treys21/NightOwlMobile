@@ -1,0 +1,7 @@
+{
+  "name": "nightowl-live-activity",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Starts, updates and ends Night Owl's ActivityKit Live Activity.",
+  "main": "index.ts"
+}
