@@ -1,0 +1,19 @@
+name = "nightowl-bff-proxy"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Create with `wrangler kv namespace create NIGHTOWL_KV` and paste the id here.
+[[kv_namespaces]]
+binding = "NIGHTOWL_KV"
+id = "nightowl-kv-production"
+
+# 08:00 UTC: rebuild the slim player directory (Sleeper asks for at most one
+# /players/nfl pull a day). Every 15 minutes: prewarm odds for games kicking
+# off in the next 36 hours.
+[triggers]
+crons = ["0 8 * * *", "*/15 * * * *"]
+
+# Secrets (not in this file):
+#   wrangler secret put ODDS_API_KEY      # optional; without it /odds serves ESPN + Sleeper Picks lines
+# Vars:
+#   ALLOWED_ORIGINS = "https://example.com"   # optional; defaults to "*"

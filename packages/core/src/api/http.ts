@@ -102,7 +102,10 @@ export class HttpClient {
   private readonly now: () => number;
 
   constructor(options: HttpClientOptions = {}) {
-    this.fetchImpl = options.fetchImpl ?? ((input, init) => fetch(input, init));
+    // Always call through a closure: runtimes like Workers throw "Illegal
+    // invocation" when fetch is called as a method of another object.
+    const impl = options.fetchImpl ?? fetch;
+    this.fetchImpl = (input, init) => impl(input, init);
     this.rate = options.ratePerSecond ?? 15;
     this.burst = options.burst ?? 15;
     this.sleep = options.sleep ?? realSleep;
