@@ -1,0 +1,15 @@
+{
+  "name": "nightowl-ios",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Night Owl for iOS: live cross-league play feed, lineup health, Vegas edge and draft war room for Sleeper.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "verify": "npm run typecheck && npm test"
+  }
+}
