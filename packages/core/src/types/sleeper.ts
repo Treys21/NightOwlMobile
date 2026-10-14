@@ -144,6 +144,10 @@ export interface SleeperLeagueSettings {
   type: LeagueKind;
   start_week?: number;
   last_scored_leg?: number;
+  /** 0 one week a round, 1 two-week championship, 2 two weeks every round. */
+  playoff_round_type?: number;
+  /** Rookie / startup draft rounds (keeper and dynasty leagues). */
+  draft_rounds?: number;
 }
 
 export type LeagueStatus = 'pre_draft' | 'drafting' | 'in_season' | 'complete';

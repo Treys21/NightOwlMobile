@@ -5,13 +5,13 @@ import { Redirect, Tabs, router } from 'expo-router';
 import { useEffect } from 'react';
 import { SymbolView } from 'expo-symbols';
 import type { SFSymbol } from 'expo-symbols';
-import { Platform, Settings } from 'react-native';
 import type { ColorValue } from 'react-native';
 import { usePlayerDatabase } from '../../hooks/usePlayerDatabase';
 import { useLeagueSync } from '../../hooks/useLeagueSync';
 import { useLivePlayPolling } from '../../hooks/useLivePlayPolling';
 import { useNightOwlStore } from '../../store/useNightOwlStore';
 import { colors } from '../../theme';
+import { launchArgument } from '../../utils/launchArguments';
 
 function Syncer() {
   usePlayerDatabase();
@@ -20,20 +20,12 @@ function Syncer() {
   // Simulator runs can open a tab directly: `-NightOwlOpenRoute /lineups`.
   useEffect(() => {
     const route = launchArgument('NightOwlOpenRoute');
-    if (route === '/lineups' || route === '/vegas' || route === '/drafts') router.navigate(route);
+    if (route === '/lineups' || route === '/vegas' || route === '/drafts' || route === '/season') router.navigate(route);
   }, []);
   return null;
 }
 
-/**
- * UI tests and simulator runs pass NSUserDefaults launch arguments:
- * `-NightOwlConnectUsername <name>` skips typing in onboarding.
- */
-function launchArgument(key: string): string | null {
-  if (Platform.OS !== 'ios') return null;
-  const value: unknown = Settings.get(key);
-  return typeof value === 'string' && value.trim() ? value.trim() : null;
-}
+/** `-NightOwlConnectUsername <name>` skips typing in onboarding. */
 const launchUsername = (): string | null => launchArgument('NightOwlConnectUsername');
 
 const icon = (name: SFSymbol) =>
@@ -75,6 +67,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="lineups" options={{ title: 'Lineups', tabBarIcon: icon('person.3.sequence.fill') }} />
         <Tabs.Screen name="vegas" options={{ title: 'Vegas', tabBarIcon: icon('chart.line.uptrend.xyaxis') }} />
         <Tabs.Screen name="drafts" options={{ title: 'Drafts', tabBarIcon: icon('square.grid.3x3.fill') }} />
+        <Tabs.Screen name="season" options={{ title: 'Season', tabBarIcon: icon('list.number') }} />
       </Tabs>
     </>
   );

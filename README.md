@@ -6,6 +6,7 @@ The [Night Owl](https://github.com/Treys21/NightOwl) Chrome extension, rebuilt a
 - **Lineups**: starters who are out, on bye or questionable, bench players Vegas likes more, and a cross-league exposure matrix with one-tap jumps into the Sleeper app.
 - **Vegas**: sportsbook lines turned into implied fantasy points per league, bench upgrades, a head-to-head flex comparator and every game's environment.
 - **Drafts**: a live, zoomable draft board with an on-the-clock alert and best available showing your portfolio exposure.
+- **Season**: standings, playoff odds and next year's draft order, now or projected: the rest of the season and the playoffs played out 2,000 times from every team's best projected lineup, with projected records, playoff / bye / title odds, the end-of-season draft order and a projected bracket.
 - **Live Activity**: your record across leagues and the latest play on the Lock Screen and Dynamic Island.
 
 No password, ever. Sleeper's API is public and read-only, so Night Owl only needs a username. Lineup changes happen in Sleeper's own app.
@@ -58,7 +59,7 @@ The iOS 27 SDK requires the UIScene life cycle; `plugins/withSceneLifecycle.js` 
 
 ```bash
 xcrun simctl launch booted com.nightowl.ios -NightOwlConnectUsername <sleeper username>
-xcrun simctl launch booted com.nightowl.ios -NightOwlOpenRoute /lineups   # /vegas, /drafts
+xcrun simctl launch booted com.nightowl.ios -NightOwlOpenRoute /season -NightOwlSeasonMode projected   # also /lineups, /vegas, /drafts
 ```
 
 `nightowl://connect?username=<name>` does the same setup from a link.

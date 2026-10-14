@@ -23,3 +23,4 @@ export * from './engine/espnParsers';
 export * from './engine/picksMarkets';
 export * from './engine/statTracker';
 export * from './engine/seasonEngine';
+export * from './engine/seasonProjection';

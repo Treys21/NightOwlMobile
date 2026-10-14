@@ -11,7 +11,9 @@ export const StorageKeys = {
   INCLUDED_LEAGUE_IDS: 'nightowl.included_league_ids',
   LEAGUE_WEIGHTS: 'nightowl.league_weights',
   PLAYERS_LAST_SYNC_MS: 'nightowl.players_last_sync',
-  HAPTICS_ENABLED: 'nightowl.haptics_enabled'
+  HAPTICS_ENABLED: 'nightowl.haptics_enabled',
+  SEASON_MODE: 'nightowl.season_mode',
+  DRAFT_METHOD: 'nightowl.draft_method'
 } as const;
 
 function readJson<T>(key: string, guard: (value: unknown) => value is T): T | null {
@@ -51,6 +53,12 @@ export const settings = {
 
   getHapticsEnabled: (): boolean => storage.getBoolean(StorageKeys.HAPTICS_ENABLED) ?? true,
   setHapticsEnabled: (on: boolean): void => storage.set(StorageKeys.HAPTICS_ENABLED, on),
+
+  getSeasonMode: (): 'now' | 'projected' => (storage.getString(StorageKeys.SEASON_MODE) === 'projected' ? 'projected' : 'now'),
+  setSeasonMode: (mode: 'now' | 'projected'): void => storage.set(StorageKeys.SEASON_MODE, mode),
+
+  getDraftMethod: (): 'linear' | 'inverse' => (storage.getString(StorageKeys.DRAFT_METHOD) === 'inverse' ? 'inverse' : 'linear'),
+  setDraftMethod: (method: 'linear' | 'inverse'): void => storage.set(StorageKeys.DRAFT_METHOD, method),
 
   /** Forget the account (sign out); the players cache stays. */
   clearAccount: (): void => {

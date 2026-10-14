@@ -100,7 +100,7 @@ export function Chip({ label, active, onPress, tone }: { label: string; active: 
 
 export function ChipRow({ children }: { children: ReactNode }) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 16, alignItems: "flex-start" }}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, flexShrink: 0 }} contentContainerStyle={{ paddingHorizontal: 16, alignItems: "flex-start" }}>
       {children}
     </ScrollView>
   );
