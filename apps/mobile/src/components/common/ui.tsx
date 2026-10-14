@@ -28,7 +28,7 @@ export function Num({ className = '', style, children, ...rest }: TextProps & { 
 
 export function SectionLabel({ children, right }: { children: ReactNode; right?: ReactNode }) {
   return (
-    <View className="mb-2 mt-5 flex-row items-center justify-between px-1">
+    <View className="mb-2 mt-5 flex-row items-center justify-between px-5">
       <Text className="text-[11px] font-semibold uppercase tracking-widest text-night-500">{children}</Text>
       {right}
     </View>
@@ -100,7 +100,7 @@ export function Chip({ label, active, onPress, tone }: { label: string; active: 
 
 export function ChipRow({ children }: { children: ReactNode }) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 16, alignItems: "flex-start" }}>
       {children}
     </ScrollView>
   );

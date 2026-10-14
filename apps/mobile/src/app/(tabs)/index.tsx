@@ -83,6 +83,7 @@ export default function RedZone() {
         renderItem={renderItem}
         keyExtractor={(e) => `${e.gameId}:${e.playId}`}
         ListEmptyComponent={empty}
+        maintainVisibleContentPosition={{ autoscrollToTopThreshold: 120 }}
         contentContainerStyle={{ paddingTop: 4, paddingBottom: 24 }}
         refreshControl={
           <RefreshControl

@@ -52,6 +52,7 @@ export default function RootLayout() {
               <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.night950 } }}>
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="onboarding" options={{ presentation: 'modal', gestureEnabled: true }} />
+                <Stack.Screen name="connect" options={{ animation: 'fade' }} />
               </Stack>
             ) : (
               <View className="flex-1 bg-night-950" />

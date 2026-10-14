@@ -48,4 +48,17 @@ Everything comes from public feeds, straight from the phone: Sleeper for leagues
 
 The ESPN play parser was checked against four real 2026 week 5 box scores: 320 of 324 passing, rushing and receiving stat cells match exactly (the rest are a fullback Sleeper doesn't list and one fumble whose yardage ESPN credits differently).
 
-Not yet verified: the Swift (ActivityKit module and widget) has not been compiled, because the machine that built this has no Xcode; the UI has not been run on a simulator or device; and the live feed has not been watched during real games.
+Built and run with Xcode 27 on an iPhone 18 Pro simulator (iOS 27) against live Sleeper and ESPN data: all four tabs render real leagues, alerts, lines and drafts. The device build (`-sdk iphoneos`, unsigned) compiles the ActivityKit module and embeds the widget extension.
+
+Not yet verified: the Live Activity on screen (it starts only while games are live), a signed build on a physical iPhone, and the feed during real games.
+
+### Simulator runs
+
+The iOS 27 SDK requires the UIScene life cycle; `plugins/withSceneLifecycle.js` adapts Expo's generated AppDelegate on every prebuild. For runs without typing or tapping, the app reads two launch arguments:
+
+```bash
+xcrun simctl launch booted com.nightowl.ios -NightOwlConnectUsername <sleeper username>
+xcrun simctl launch booted com.nightowl.ios -NightOwlOpenRoute /lineups   # /vegas, /drafts
+```
+
+`nightowl://connect?username=<name>` does the same setup from a link.

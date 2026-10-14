@@ -80,7 +80,7 @@ export default function Vegas() {
           <>
             <SectionLabel>Bench upgrades</SectionLabel>
             {upgrades.length ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 16, alignItems: "flex-start" }}>
                 {upgrades.map((a) => (
                   <PropUpgradeCard
                     key={a.alertId}

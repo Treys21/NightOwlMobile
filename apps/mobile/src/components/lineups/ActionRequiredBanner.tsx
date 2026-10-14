@@ -62,7 +62,7 @@ export function ActionRequiredBanner({ alerts }: { alerts: LineupActionAlert[] }
       <View className="mb-2 flex-row items-center">
         <SymbolView name={critical ? 'exclamationmark.octagon.fill' : 'bell.badge.fill'} size={16} tintColor={critical ? colors.neg : colors.warn} />
         <Text className="ml-2 text-[15px] font-bold text-night-100">
-          {alerts.length} {alerts.length === 1 ? 'lineup needs' : 'lineups need'} a look
+          {alerts.length} {alerts.length === 1 ? 'starter needs' : 'starters need'} a look
         </Text>
       </View>
       {shown.map((a) => (

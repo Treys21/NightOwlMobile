@@ -1,9 +1,11 @@
 // The four tabs. Sync hooks live here so they run only once the user has a
 // Sleeper account set; without one, onboarding comes first.
 import * as Haptics from 'expo-haptics';
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Tabs, router } from 'expo-router';
+import { useEffect } from 'react';
 import { SymbolView } from 'expo-symbols';
 import type { SFSymbol } from 'expo-symbols';
+import { Platform, Settings } from 'react-native';
 import type { ColorValue } from 'react-native';
 import { usePlayerDatabase } from '../../hooks/usePlayerDatabase';
 import { useLeagueSync } from '../../hooks/useLeagueSync';
@@ -15,8 +17,24 @@ function Syncer() {
   usePlayerDatabase();
   useLeagueSync();
   useLivePlayPolling();
+  // Simulator runs can open a tab directly: `-NightOwlOpenRoute /lineups`.
+  useEffect(() => {
+    const route = launchArgument('NightOwlOpenRoute');
+    if (route === '/lineups' || route === '/vegas' || route === '/drafts') router.navigate(route);
+  }, []);
   return null;
 }
+
+/**
+ * UI tests and simulator runs pass NSUserDefaults launch arguments:
+ * `-NightOwlConnectUsername <name>` skips typing in onboarding.
+ */
+function launchArgument(key: string): string | null {
+  if (Platform.OS !== 'ios') return null;
+  const value: unknown = Settings.get(key);
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+const launchUsername = (): string | null => launchArgument('NightOwlConnectUsername');
 
 const icon = (name: SFSymbol) =>
   function TabIcon({ color }: { color: ColorValue }) {
@@ -27,7 +45,10 @@ export default function TabsLayout() {
   const user = useNightOwlStore((s) => s.user);
   const losing = useNightOwlStore((s) => s.matchupSummaries.filter((m) => m.opponentRosterId !== null && !m.isWinning && !m.isTied).length);
   const live = useNightOwlStore((s) => s.games.some((g) => g.state === 'in'));
-  if (!user) return <Redirect href="/onboarding" />;
+  if (!user) {
+    const username = launchUsername();
+    return <Redirect href={username ? `/connect?username=${encodeURIComponent(username)}` : '/onboarding'} />;
+  }
 
   return (
     <>

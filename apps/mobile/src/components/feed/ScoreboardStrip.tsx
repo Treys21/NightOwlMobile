@@ -9,8 +9,9 @@ import { pts, signedPts } from '../../utils/format';
 export function ScoreboardStrip({ summaries, selected, onSelect }: { summaries: LiveMatchupSummary[]; selected: string | null; onSelect: (leagueId: string | null) => void }) {
   if (!summaries.length) return null;
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 4 }}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 4, alignItems: 'flex-start' }}>
       {summaries.map((m) => {
+        const notStarted = m.userPoints === 0 && m.opponentPoints === 0;
         const tone = m.opponentRosterId === null || m.isTied ? colors.night500 : m.isWinning ? colors.pos : colors.neg;
         const on = selected === m.leagueId;
         return (
@@ -39,7 +40,7 @@ export function ScoreboardStrip({ summaries, selected, onSelect }: { summaries: 
             </View>
             {m.opponentRosterId !== null ? (
               <Text className="mt-0.5 text-[11px] font-semibold" style={[{ color: tone }, tabular]}>
-                {m.isTied ? 'Tied' : signedPts(m.pointDifferential)}
+                {notStarted ? 'Not started' : m.isTied ? 'Tied' : signedPts(m.pointDifferential)}
               </Text>
             ) : null}
           </Pressable>

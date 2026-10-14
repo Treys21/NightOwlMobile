@@ -99,6 +99,7 @@ export default function Lineups() {
         }
         contentContainerStyle={{ paddingBottom: 24 }}
         keyboardDismissMode="on-drag"
+        maintainVisibleContentPosition={{ disabled: true }}
       />
     </SafeAreaView>
   );
